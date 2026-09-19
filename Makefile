@@ -1,25 +1,25 @@
 CC = gcc
 
 CFLAGS = -Wall -Werror
-CPPFLAGS = -Iinclude
+CPPFLAGS = -Iinclude -Iexternal/unity/src
 
 BUILD_DIR = build
 OBJECT_DIR = $(BUILD_DIR)/obj
 TEST_BUILD_DIR = $(BUILD_DIR)/tests
 
-EXE = $(BUILD_DIR)/seek
-
 SRC_DIR = src
 TEST_DIR = tests
+UNITY_DIR = external/unity/src
+
+EXE = $(BUILD_DIR)/seek
 
 SRCS = $(wildcard $(SRC_DIR)/*.c)
 OBJS = $(patsubst $(SRC_DIR)/%.c,$(OBJECT_DIR)/%.o,$(SRCS))
 
-# All source files except main.c, because tests have their own main()
-LIB_SRCS = $(filter-out $(SRC_DIR)/main.c,$(SRCS))
-
 TEST_SRCS = $(wildcard $(TEST_DIR)/test_*.c)
 TEST_BINS = $(patsubst $(TEST_DIR)/%.c,$(TEST_BUILD_DIR)/%,$(TEST_SRCS))
+
+UNITY_SRC = $(UNITY_DIR)/unity.c
 
 
 $(EXE): $(OBJS)
@@ -32,14 +32,13 @@ $(OBJECT_DIR)/%.o: $(SRC_DIR)/%.c
 	$(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $@
 
 
-$(TEST_BUILD_DIR)/%: $(TEST_DIR)/%.c $(LIB_SRCS)
+$(TEST_BUILD_DIR)/%: $(TEST_DIR)/%.c $(UNITY_SRC)
 	mkdir -p $(TEST_BUILD_DIR)
-	$(CC) $(CPPFLAGS) $(CFLAGS) $< $(LIB_SRCS) -o $@
+	$(CC) $(CPPFLAGS) $(CFLAGS) $^ -o $@
 
 
 test: $(TEST_BINS)
 	@for test in $(TEST_BINS); do \
-		echo "Running $$test"; \
 		$$test || exit 1; \
 	done
 
