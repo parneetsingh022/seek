@@ -1,9 +1,15 @@
 #include <seek/walk.h>
 
-static bool
-is_special_dir(const struct dirent *entry);
+/**
+ * Determines whether a directory entry refers to the current directory
+ * (".") or the parent directory ("..").
+ *
+ * @param entry Directory entry to check.
+ * @return true if the entry is "." or "..", false otherwise.
+ */
+static bool is_special_dir(const struct dirent *entry);
 
-void walk_dir(char *dir_name)
+void walk_dir(const char *dir_name, walk_callback func)
 {
   DIR *dir;
   struct dirent *entry;
@@ -26,24 +32,14 @@ void walk_dir(char *dir_name)
     struct stat info;
 
     if ((stat(path, &info)) == 0) { 
-      if (S_ISDIR(info.st_mode)) {
-        // if a directory
-        printf("[DIR] %s\n", path);
-        walk_dir(path);
-      } else if(S_ISREG(info.st_mode)) {
-        // If a regular file
-        printf("[FILE] %s\n", path);
-      }
+      func(path, &info);
     }
   }
 
   closedir(dir);
 }
 
-
-
-static bool
-is_special_dir(const struct dirent *entry)
+static bool is_special_dir(const struct dirent *entry)
 {
   return strcmp(entry->d_name, ".") == 0
          || strcmp(entry->d_name, "..") == 0;
