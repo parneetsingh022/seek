@@ -86,7 +86,7 @@ void test_walk_dir_finds_file(void)
 
     create_file(file_path);
 
-    walk_dir(temp_dir, record_path);
+    walk_dir(temp_dir, record_path, false);
 
     TEST_ASSERT_EQUAL(1, path_count);
     TEST_ASSERT_EQUAL_STRING(file_path, paths[0]);
@@ -106,7 +106,7 @@ void test_walk_dir_finds_directory(void)
 
     TEST_ASSERT_EQUAL(0, result);
 
-    walk_dir(temp_dir, record_path);
+    walk_dir(temp_dir, record_path, false);
 
     TEST_ASSERT_EQUAL(1, path_count);
     TEST_ASSERT_EQUAL_STRING(dir_path, paths[0]);
@@ -131,7 +131,7 @@ void test_walk_dir_finds_multiple_entries(void)
     int result = mkdir(dir_path, 0700);
     TEST_ASSERT_EQUAL(0, result);
 
-    walk_dir(temp_dir, record_path);
+    walk_dir(temp_dir, record_path, false);
 
     TEST_ASSERT_EQUAL(2, path_count);
 
@@ -159,17 +159,16 @@ void test_walk_dir_finds_multiple_entries(void)
  */
 void test_walk_dir_skips_special_entries(void)
 {
-    walk_dir(temp_dir, record_path);
+    walk_dir(temp_dir, record_path, false);
 
     TEST_ASSERT_EQUAL(0, path_count);
 }
 
-/*
- * Test nested directory contents.
- *
- * Note that walk_dir() itself only visits the immediate directory.
+/**
+ * Verifies that walk_dir() only visits entries in the specified
+ * directory when recursive traversal is disabled.
  */
-void test_walk_dir_does_not_recurse(void)
+void test_walk_dir_non_recursive(void)
 {
     char subdir[PATH_MAX];
     char nested_file[PATH_MAX];
@@ -184,13 +183,60 @@ void test_walk_dir_does_not_recurse(void)
 
     create_file(nested_file);
 
-    walk_dir(temp_dir, record_path);
+    walk_dir(temp_dir, record_path, false);
 
     /*
-     * We should only see "subdir", not "nested.txt".
+     * Only the immediate subdirectory should be visited.
      */
     TEST_ASSERT_EQUAL(1, path_count);
     TEST_ASSERT_EQUAL_STRING(subdir, paths[0]);
+}
+
+/**
+ * Verifies that walk_dir() recursively visits entries in
+ * nested subdirectories when recursive traversal is enabled.
+ */
+void test_walk_dir_recursive(void)
+{
+    char level1[PATH_MAX];
+    char level2[PATH_MAX];
+    char level3[PATH_MAX];
+    char file1[PATH_MAX];
+    char file2[PATH_MAX];
+    char file3[PATH_MAX];
+
+    snprintf(level1, sizeof(level1),
+             "%s/level1", temp_dir);
+
+    snprintf(level2, sizeof(level2),
+             "%s/level1/level2", temp_dir);
+
+    snprintf(level3, sizeof(level3),
+             "%s/level1/level2/level3", temp_dir);
+
+    snprintf(file1, sizeof(file1),
+             "%s/level1/file1.txt", temp_dir);
+
+    snprintf(file2, sizeof(file2),
+             "%s/level1/level2/file2.txt", temp_dir);
+
+    snprintf(file3, sizeof(file3),
+             "%s/level1/level2/level3/file3.txt", temp_dir);
+
+    TEST_ASSERT_EQUAL(0, mkdir(level1, 0700));
+    TEST_ASSERT_EQUAL(0, mkdir(level2, 0700));
+    TEST_ASSERT_EQUAL(0, mkdir(level3, 0700));
+
+    create_file(file1);
+    create_file(file2);
+    create_file(file3);
+
+    walk_dir(temp_dir, record_path, true);
+
+    /*
+     * We should see every directory and file at all three levels.
+     */
+    TEST_ASSERT_EQUAL(6, path_count);
 }
 
 int main(void)
@@ -201,7 +247,8 @@ int main(void)
     RUN_TEST(test_walk_dir_finds_directory);
     RUN_TEST(test_walk_dir_finds_multiple_entries);
     RUN_TEST(test_walk_dir_skips_special_entries);
-    RUN_TEST(test_walk_dir_does_not_recurse);
+    RUN_TEST(test_walk_dir_non_recursive);
+    RUN_TEST(test_walk_dir_recursive);
 
     return UNITY_END();
 }
