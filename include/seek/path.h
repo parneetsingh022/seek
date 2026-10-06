@@ -6,5 +6,6 @@
 #include <string.h>
 
 bool path_is_abs(const char *path);
+bool get_abs_path(const char *path);
  
 #endif
