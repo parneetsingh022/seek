@@ -26,7 +26,7 @@ void walk_dir(const char *dir_name, walk_callback func)
 
     
     // Construct the full path: "dir_name/entry_name"
-    char path[1024];
+    char path[PATH_MAX];
     snprintf(path, sizeof(path), "%s/%s", dir_name, entry->d_name);    
 
     struct stat info;

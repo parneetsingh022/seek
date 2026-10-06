@@ -7,6 +7,7 @@
 #include <string.h>
 #include <dirent.h>
 #include <sys/stat.h>
+#include <limits.h>
 
 typedef void (*walk_callback)(const char *path, struct stat *info);
 
