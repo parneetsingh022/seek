@@ -20,4 +20,4 @@ DerivePointerAlignment: false
 
 SortIncludes: true
 
-ReflowComments: true
+RemoveBracesLLVM: true
