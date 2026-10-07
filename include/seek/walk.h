@@ -1,5 +1,5 @@
-#ifndef __WALK_H
-#define __WALK_H
+#ifndef WALK_H
+#define WALK_H
 
 #include <dirent.h>
 #include <limits.h>
@@ -23,4 +23,4 @@ typedef void (*walk_callback)(const char* path, struct stat* info);
  */
 void walk_dir(const char* dir_name, walk_callback func, bool recursive);
 
-#endif // __WALK_H
+#endif // WALK_H
