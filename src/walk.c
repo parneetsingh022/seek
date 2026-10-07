@@ -21,8 +21,7 @@ void walk_dir(const char* dir_name, walk_callback func, bool recursive)
 
 	while ((entry = readdir(dir)) != NULL) {
 		// Skip '.' and '..' dirs
-		if (is_special_dir(entry))
-			continue;
+		if (is_special_dir(entry)) continue;
 
 		// Construct the full path: "dir_name/entry_name"
 		char path[PATH_MAX];
@@ -30,8 +29,7 @@ void walk_dir(const char* dir_name, walk_callback func, bool recursive)
 
 		struct stat info;
 
-		if ((stat(path, &info)) != 0)
-			continue;
+		if ((stat(path, &info)) != 0) continue;
 
 		func(path, &info);
 		// Recursively walk into subdirectories when enabled.

@@ -137,11 +137,9 @@ void test_walk_dir_finds_multiple_entries(void)
 	bool found_dir = false;
 
 	for (int i = 0; i < path_count; i++) {
-		if (strcmp(paths[i], file_path) == 0)
-			found_file = true;
+		if (strcmp(paths[i], file_path) == 0) found_file = true;
 
-		if (strcmp(paths[i], dir_path) == 0)
-			found_dir = true;
+		if (strcmp(paths[i], dir_path) == 0) found_dir = true;
 	}
 
 	TEST_ASSERT_TRUE(found_file);
