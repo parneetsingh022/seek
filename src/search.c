@@ -3,19 +3,17 @@
 const char* seek_find(const char* text, size_t text_length, const char* pattern,
 		      size_t pattern_length)
 {
-	if (pattern_length == 0) {
-		return text; // Empty pattern matches at the beginning of the
-			     // text.
-	}
-	if (pattern_length > text_length) {
-		return NULL; // A pattern longer than the text cannot possibly
-			     // match.
-	}
+	// Empty pattern matches at the beginning of the text.
+	if (pattern_length == 0)
+		return text;
+
+	// A pattern longer than the text cannot possibly match.
+	if (pattern_length > text_length)
+		return NULL;
 
 	size_t bad_match_shift_table[256];
-	for (size_t character = 0; character < 256; character++) {
+	for (size_t character = 0; character < 256; character++)
 		bad_match_shift_table[character] = pattern_length;
-	}
 
 	size_t shift;
 	for (size_t index = 0; index < pattern_length - 1; index++) {
@@ -32,15 +30,15 @@ const char* seek_find(const char* text, size_t text_length, const char* pattern,
 			   pattern[comparison_index - 1]) {
 			comparison_index--;
 		}
-		if (comparison_index == 0) {
-			return text + position; // A full match was found at
-						// this offset.
-		}
+
+		// A full match was found at his offset.
+		if (comparison_index == 0)
+			return text + position;
+
+		// Shift the position based on the bad match table
 		position += bad_match_shift_table[(
-		    unsigned char)text[position + pattern_length -
-				       1]]; // Shift the position based on the
-					    // bad match table
+		    unsigned char)text[position + pattern_length - 1]];
 	}
 
-	return NULL; // No match was found in the text.
+	return NULL;
 }

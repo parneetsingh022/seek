@@ -3,11 +3,10 @@
 
 void print_paths(const char* path, struct stat* info)
 {
-	if (S_ISDIR(info->st_mode)) {
+	if (S_ISDIR(info->st_mode))
 		printf("[DIR!]: %s\n", path);
-	} else if (S_ISREG(info->st_mode)) {
+	else if (S_ISREG(info->st_mode))
 		printf("[FILE!]: %s\n", path);
-	}
 }
 
 int main()
