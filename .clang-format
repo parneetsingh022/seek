@@ -10,6 +10,7 @@ BreakBeforeBraces: Linux
 
 AllowShortIfStatementsOnASingleLine: Never
 AllowShortLoopsOnASingleLine: false
+AllowShortFunctionsOnASingleLine: Empty
 
 IndentCaseLabels: false
 

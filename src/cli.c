@@ -1,6 +1,9 @@
 #include <seek/cli.h>
 
-void cli_add_flags(struct cli_args *args, int flags) { args->flags |= flags; }
+void cli_add_flags(struct cli_args *args, int flags)
+{
+	args->flags |= flags;
+}
 
 void cli_remove_flags(struct cli_args *args, int flags)
 {
