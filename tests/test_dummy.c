@@ -88,7 +88,7 @@ void test_character_assertions(void)
 
 void test_string_assertions(void)
 {
-	const char* name = "seek";
+	const char *name = "seek";
 
 	TEST_ASSERT_EQUAL_STRING("seek", name);
 
@@ -106,8 +106,8 @@ void test_pointer_assertions(void)
 {
 	int value = 42;
 
-	int* ptr = &value;
-	int* null_ptr = NULL;
+	int *ptr = &value;
+	int *null_ptr = NULL;
 
 	TEST_ASSERT_NOT_NULL(ptr);
 	TEST_ASSERT_NULL(null_ptr);

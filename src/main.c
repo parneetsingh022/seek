@@ -1,7 +1,7 @@
 #include <seek/walk.h>
 #include <stdio.h>
 
-void print_paths(const char* path, struct stat* info)
+void print_paths(const char *path, struct stat *info)
 {
 	if (S_ISDIR(info->st_mode))
 		printf("[DIR!]: %s\n", path);

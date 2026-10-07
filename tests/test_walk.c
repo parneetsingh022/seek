@@ -20,8 +20,8 @@ static char temp_dir[256];
 static char paths[16][PATH_MAX];
 static int path_count;
 
-static int remove_entry(const char* path, const struct stat* info, int type,
-			struct FTW* ftwbuf)
+static int remove_entry(const char *path, const struct stat *info, int type,
+			struct FTW *ftwbuf)
 {
 	(void)info;
 	(void)type;
@@ -36,7 +36,7 @@ void setUp(void)
 
 	strcpy(temp_dir, "/tmp/seek-test-XXXXXX");
 
-	char* result = mkdtemp(temp_dir);
+	char *result = mkdtemp(temp_dir);
 	TEST_ASSERT_NOT_NULL(result);
 }
 
@@ -49,7 +49,7 @@ void tearDown(void)
 /*
  * Callback used by the tests.
  */
-static void record_path(const char* path, struct stat* info)
+static void record_path(const char *path, struct stat *info)
 {
 	TEST_ASSERT_NOT_NULL(path);
 	TEST_ASSERT_NOT_NULL(info);
@@ -63,9 +63,9 @@ static void record_path(const char* path, struct stat* info)
 /*
  * Creates a regular file.
  */
-static void create_file(const char* path)
+static void create_file(const char *path)
 {
-	FILE* file = fopen(path, "w");
+	FILE *file = fopen(path, "w");
 
 	TEST_ASSERT_NOT_NULL(file);
 
