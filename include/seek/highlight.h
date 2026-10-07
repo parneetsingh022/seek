@@ -16,6 +16,7 @@
  * @param pattern Pattern to highlight.
  * @param pattern_length Number of bytes in pattern.
  */
-void print_highlighted(FILE *output, const char *text, size_t text_length, const char *pattern, size_t pattern_length);
+void print_highlighted(FILE *output, const char *text, size_t text_length,
+		       const char *pattern, size_t pattern_length);
 
-#endif 
+#endif
