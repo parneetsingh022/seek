@@ -8,7 +8,7 @@ ColumnLimit: 80
 
 BreakBeforeBraces: Linux
 
-AllowShortIfStatementsOnASingleLine: WithoutElse
+AllowShortIfStatementsOnASingleLine: Never
 AllowShortLoopsOnASingleLine: false
 
 IndentCaseLabels: false
