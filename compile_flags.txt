@@ -1,0 +1,4 @@
+-Wall
+-Werror
+-Iinclude
+-Iexternal/unity/src
