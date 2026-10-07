@@ -18,13 +18,12 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Install clang-format
-        run: sudo apt-get update && sudo apt-get install -y clang-format
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang-format-22
 
       - name: Check clang-format version
-        run: clang-format --version
-
-      - name: Check clang-format configuration
-        run: clang-format -style=file -dump-config
+        run: clang-format-22 --version
 
       - name: Check formatting
-        run: make format-check
+        run: make format-check CLANG_FORMAT=clang-format-22
