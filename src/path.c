@@ -15,7 +15,6 @@ bool path_is_abs(const char *path)
     return false;
 
   return path[0] == '/';
-
 }
 
 
