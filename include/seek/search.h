@@ -3,32 +3,23 @@
 
 #include <stddef.h>
 
-/*
- * seek_find() searches for the first occurrence of a pattern within a byte
- * sequence and returns a pointer into the original text buffer.
+/**
+ * @brief Searches for the first occurrence of a pattern within a byte sequence.
  *
- * The function uses a bad-character shift strategy to move the
- * search window efficiently through the text.
+ * This function scans the text using a bad-character shift table and returns a
+ * pointer to the first match found inside the original text buffer.
  *
- * Parameters:
- *  - text: the buffer to search within
- *  - text_length: number of bytes in text
- *  - pattern: the byte sequence to look for
- *  - pattern_length: number of bytes in pattern
+ * @param text Pointer to the buffer to search.
+ * @param text_length Number of bytes in the text buffer.
+ * @param pattern Pointer to the pattern to search for.
+ * @param pattern_length Number of bytes in the pattern.
  *
- * Return values:
- *  - If the pattern is empty, it returns text. This is the conventional
- *    behavior for string-search routines: an empty pattern matches at the
- *    beginning of the text.
- *  - If the pattern is longer than the text, it returns NULL because the
- *    pattern cannot fit in the remaining search space.
- *  - If a match is found, it returns a pointer to the first byte of the
- *    match inside text.
- *  - If no match is found, it returns NULL.
+ * @return Pointer to the first byte of the match, or `NULL` if no match
+ *         exists. If `pattern_length` is zero, returns `text`.
  *
- * Note: the returned pointer points into the original text buffer and must not
+ * @note The returned pointer points into the original text buffer and must not
  * be freed by the caller.
  */
-const char *seek_find( const char *text, size_t text_length, const char *pattern, size_t pattern_length);
+const char *seek_find(const char *text, size_t text_length, const char *pattern, size_t pattern_length);
 
 #endif
