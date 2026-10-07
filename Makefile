@@ -3,6 +3,8 @@ CC = gcc
 CFLAGS = -Wall -Werror
 CPPFLAGS = -Iinclude -Iexternal/unity/src
 
+CLANG_FORMAT ?= clang-format
+
 BUILD_DIR = build
 OBJECT_DIR = $(BUILD_DIR)/obj
 TEST_BUILD_DIR = $(BUILD_DIR)/tests
@@ -62,6 +64,16 @@ test: $(TEST_BINS)
 		$$test || exit 1; \
 	done
 
+# ---------------------------------------------------------
+# Format
+# ---------------------------------------------------------
+format:
+	find src tests include -type f \( -name '*.c' -o -name '*.h' \) \
+		-exec $(CLANG_FORMAT) -i {} +
+
+format-check:
+	files=$$(find src tests include -type f \( -name '*.c' -o -name '*.h' \)); \
+	$(CLANG_FORMAT) --dry-run --Werror $$files
 
 # ---------------------------------------------------------
 # Run
