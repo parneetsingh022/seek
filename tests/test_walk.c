@@ -1,4 +1,8 @@
+#ifdef __linux__
 #define _XOPEN_SOURCE 700
+#elif defined(__APPLE__)
+#define _DARWIN_C_SOURCE
+#endif
 
 #include "unity.h"
 
