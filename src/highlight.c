@@ -1,4 +1,5 @@
 #include <seek/highlight.h>
+#include <seek/search.h>
 
 void print_highlighted(FILE *output, const char *text, size_t text_length,
 		       const char *pattern, size_t pattern_length)
