@@ -1,6 +1,6 @@
 #include <seek/search.h>
 
-const char* seek_find(const char* text, size_t text_length, const char* pattern,
+const char *seek_find(const char *text, size_t text_length, const char *pattern,
 		      size_t pattern_length)
 {
 	// Empty pattern matches at the beginning of the text.

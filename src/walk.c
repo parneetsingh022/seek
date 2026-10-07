@@ -7,12 +7,12 @@
  * @param entry Directory entry to check.
  * @return true if the entry is "." or "..", false otherwise.
  */
-static bool is_special_dir(const struct dirent* entry);
+static bool is_special_dir(const struct dirent *entry);
 
-void walk_dir(const char* dir_name, walk_callback func, bool recursive)
+void walk_dir(const char *dir_name, walk_callback func, bool recursive)
 {
-	DIR* dir;
-	struct dirent* entry;
+	DIR *dir;
+	struct dirent *entry;
 
 	if (!(dir = opendir(dir_name))) {
 		perror("opendir");
@@ -42,7 +42,7 @@ void walk_dir(const char* dir_name, walk_callback func, bool recursive)
 	closedir(dir);
 }
 
-static bool is_special_dir(const struct dirent* entry)
+static bool is_special_dir(const struct dirent *entry)
 {
 	return strcmp(entry->d_name, ".") == 0 ||
 	       strcmp(entry->d_name, "..") == 0;

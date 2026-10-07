@@ -20,7 +20,7 @@
  * @note The returned pointer points into the original text buffer and must not
  * be freed by the caller.
  */
-const char* seek_find(const char* text, size_t text_length, const char* pattern,
+const char *seek_find(const char *text, size_t text_length, const char *pattern,
 		      size_t pattern_length);
 
 #endif // SEARCH_H

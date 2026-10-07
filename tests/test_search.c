@@ -15,7 +15,7 @@ void test_finds_pattern_at_beginning(void)
 	const char text[] = "toothbrush";
 	const char pattern[] = "too";
 
-	const char* result =
+	const char *result =
 	    seek_find(text, sizeof(text) - 1, pattern, sizeof(pattern) - 1);
 
 	TEST_ASSERT_EQUAL_PTR(text, result);
@@ -27,7 +27,7 @@ void test_finds_pattern_at_end(void)
 	const char text[] = "toothbrush";
 	const char pattern[] = "brush";
 
-	const char* result =
+	const char *result =
 	    seek_find(text, sizeof(text) - 1, pattern, sizeof(pattern) - 1);
 
 	TEST_ASSERT_EQUAL_PTR(text + 5, result);
@@ -39,7 +39,7 @@ void test_finds_pattern_in_middle(void)
 	const char text[] = "xxneedlexx";
 	const char pattern[] = "needle";
 
-	const char* result =
+	const char *result =
 	    seek_find(text, sizeof(text) - 1, pattern, sizeof(pattern) - 1);
 
 	TEST_ASSERT_EQUAL_PTR(text + 2, result);
@@ -51,7 +51,7 @@ void test_finds_pattern_equal_to_entire_text(void)
 	const char text[] = "seek";
 	const char pattern[] = "seek";
 
-	const char* result =
+	const char *result =
 	    seek_find(text, sizeof(text) - 1, pattern, sizeof(pattern) - 1);
 
 	TEST_ASSERT_EQUAL_PTR(text, result);
@@ -63,7 +63,7 @@ void test_returns_null_when_pattern_is_missing(void)
 	const char text[] = "toothbrush";
 	const char pattern[] = "comb";
 
-	const char* result =
+	const char *result =
 	    seek_find(text, sizeof(text) - 1, pattern, sizeof(pattern) - 1);
 
 	TEST_ASSERT_NULL(result);
@@ -75,7 +75,7 @@ void test_returns_null_when_pattern_is_longer_than_text(void)
 	const char text[] = "cat";
 	const char pattern[] = "caterpillar";
 
-	const char* result =
+	const char *result =
 	    seek_find(text, sizeof(text) - 1, pattern, sizeof(pattern) - 1);
 
 	TEST_ASSERT_NULL(result);
@@ -87,7 +87,7 @@ void test_empty_pattern_matches_at_beginning(void)
 	const char text[] = "toothbrush";
 	const char pattern[] = "";
 
-	const char* result =
+	const char *result =
 	    seek_find(text, sizeof(text) - 1, pattern, sizeof(pattern) - 1);
 
 	TEST_ASSERT_EQUAL_PTR(text, result);
@@ -99,7 +99,7 @@ void test_finds_single_character_pattern(void)
 	const char text[] = "abcdef";
 	const char pattern[] = "d";
 
-	const char* result =
+	const char *result =
 	    seek_find(text, sizeof(text) - 1, pattern, sizeof(pattern) - 1);
 
 	TEST_ASSERT_EQUAL_PTR(text + 3, result);
@@ -111,7 +111,7 @@ void test_returns_first_overlapping_match(void)
 	const char text[] = "aaaaa";
 	const char pattern[] = "aaa";
 
-	const char* result =
+	const char *result =
 	    seek_find(text, sizeof(text) - 1, pattern, sizeof(pattern) - 1);
 
 	TEST_ASSERT_EQUAL_PTR(text, result);
@@ -123,7 +123,7 @@ void test_search_is_case_sensitive(void)
 	const char text[] = "seek";
 	const char pattern[] = "Seek";
 
-	const char* result =
+	const char *result =
 	    seek_find(text, sizeof(text) - 1, pattern, sizeof(pattern) - 1);
 
 	TEST_ASSERT_NULL(result);
@@ -138,7 +138,7 @@ void test_finds_pattern_containing_null_byte(void)
 	const char text[] = {'a', 'b', '\0', 'c', 'd'};
 	const char pattern[] = {'\0', 'c'};
 
-	const char* result =
+	const char *result =
 	    seek_find(text, sizeof(text), pattern, sizeof(pattern));
 
 	TEST_ASSERT_EQUAL_PTR(text + 2, result);
@@ -153,7 +153,7 @@ void test_finds_non_ascii_byte(void)
 	const char text[] = {'a', (char)0xFF, 'b'};
 	const char pattern[] = {(char)0xFF, 'b'};
 
-	const char* result =
+	const char *result =
 	    seek_find(text, sizeof(text), pattern, sizeof(pattern));
 
 	TEST_ASSERT_EQUAL_PTR(text + 1, result);
