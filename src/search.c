@@ -4,12 +4,10 @@ const char* seek_find(const char* text, size_t text_length, const char* pattern,
 		      size_t pattern_length)
 {
 	// Empty pattern matches at the beginning of the text.
-	if (pattern_length == 0)
-		return text;
+	if (pattern_length == 0) return text;
 
 	// A pattern longer than the text cannot possibly match.
-	if (pattern_length > text_length)
-		return NULL;
+	if (pattern_length > text_length) return NULL;
 
 	size_t bad_match_shift_table[256];
 	for (size_t character = 0; character < 256; character++)
@@ -32,8 +30,7 @@ const char* seek_find(const char* text, size_t text_length, const char* pattern,
 		}
 
 		// A full match was found at his offset.
-		if (comparison_index == 0)
-			return text + position;
+		if (comparison_index == 0) return text + position;
 
 		// Shift the position based on the bad match table
 		position += bad_match_shift_table[(

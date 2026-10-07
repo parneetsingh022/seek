@@ -8,16 +8,16 @@ ColumnLimit: 80
 
 BreakBeforeBraces: Linux
 
-AllowShortIfStatementsOnASingleLine: false
+AllowShortIfStatementsOnASingleLine: WithoutElse
 AllowShortLoopsOnASingleLine: false
+
 IndentCaseLabels: false
 
 PointerAlignment: Left
+DerivePointerAlignment: false
 
 SpaceBeforeParens: ControlStatements
 
-DerivePointerAlignment: false
-
 SortIncludes: true
 
-RemoveBracesLLVM: true
+RemoveBracesLLVM: false
