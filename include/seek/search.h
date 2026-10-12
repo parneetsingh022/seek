@@ -2,6 +2,7 @@
 #define SEARCH_H
 
 #include <stddef.h>
+#include <stdio.h>
 
 /**
  * @brief Searches for the first occurrence of a pattern within a byte sequence.
@@ -22,5 +23,20 @@
  */
 const char *seek_find(const char *text, size_t text_length, const char *pattern,
 		      size_t pattern_length);
+
+/**
+ * @brief Prints each line containing a pattern, prefixed with its line number.
+ *
+ * Matching occurrences are highlighted, and line numbers start at 1.
+ * A final line without a newline is supported.
+ *
+ * @param output Stream to write matching lines to.
+ * @param text Text buffer to search.
+ * @param text_length Number of bytes in the text buffer.
+ * @param pattern Pattern to search for.
+ * @param pattern_length Number of bytes in the pattern.
+ */
+void seek_search(FILE *output, const char *text, size_t text_length,
+		 const char *pattern, size_t pattern_length);
 
 #endif // SEARCH_H

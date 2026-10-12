@@ -1,3 +1,4 @@
+#include <seek/highlight.h>
 #include <seek/search.h>
 
 const char *seek_find(const char *text, size_t text_length, const char *pattern,
@@ -41,4 +42,30 @@ const char *seek_find(const char *text, size_t text_length, const char *pattern,
 	}
 
 	return NULL;
+}
+
+void seek_search(FILE *output, const char *text, size_t text_length,
+		 const char *pattern, size_t pattern_length)
+{
+	size_t line_number = 1;
+	size_t line_start = 0;
+
+	while (line_start < text_length) {
+		size_t line_end = line_start;
+		while (line_end < text_length && text[line_end] != '\n')
+			line_end++;
+
+		size_t line_length = line_end - line_start;
+		const char *line = text + line_start;
+		if (seek_find(line, line_length, pattern, pattern_length) !=
+		    NULL) {
+			fprintf(output, "%zu:", line_number);
+			print_highlighted(output, line, line_length, pattern,
+					  pattern_length);
+			fputc('\n', output);
+		}
+
+		line_start = line_end + (line_end < text_length ? 1 : 0);
+		line_number++;
+	}
 }
