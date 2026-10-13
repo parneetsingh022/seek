@@ -1,33 +1,62 @@
 #include "unity.h"
 #include <seek/search.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
 
 void setUp(void) {}
 
 void tearDown(void) {}
 
-static void assert_search_output(const char *text, size_t text_length,
+static void assert_search_output(const char *file_contents,
+				 size_t file_contents_length,
 				 const char *pattern, size_t pattern_length,
-				 const char *expected, size_t expected_length)
+				 const char *expected_lines,
+				 size_t expected_lines_length)
 {
-	char actual[256];
+	char path[] = "/tmp/seek_test_search_XXXXXX";
+	int file_descriptor = mkstemp(path);
+	TEST_ASSERT_TRUE(file_descriptor >= 0);
+
+	FILE *input = fdopen(file_descriptor, "wb");
+	TEST_ASSERT_NOT_NULL(input);
+	size_t written = fwrite(file_contents, 1, file_contents_length, input);
+	int input_close_result = fclose(input);
+	TEST_ASSERT_EQUAL_UINT(file_contents_length, written);
+	TEST_ASSERT_EQUAL_INT(0, input_close_result);
+
+	char actual[512];
 	FILE *output = tmpfile();
 
 	TEST_ASSERT_NOT_NULL(output);
-	seek_search(output, text, text_length, pattern, pattern_length);
+	seek_search(output, path, pattern, pattern_length);
 	rewind(output);
 	size_t actual_length = fread(actual, 1, sizeof(actual), output);
 	fclose(output);
+	unlink(path);
+
+	char expected[512];
+	size_t expected_length = 0;
+	if (expected_lines_length > 0) {
+		int prefix_length =
+		    snprintf(expected, sizeof(expected), "%s:\n", path);
+		TEST_ASSERT_TRUE(prefix_length >= 0);
+		expected_length = (size_t)prefix_length + expected_lines_length;
+		TEST_ASSERT_TRUE(expected_length <= sizeof(expected));
+		memcpy(expected + prefix_length, expected_lines,
+		       expected_lines_length);
+	}
 
 	TEST_ASSERT_EQUAL_UINT(expected_length, actual_length);
 	if (expected_length > 0)
 		TEST_ASSERT_EQUAL_MEMORY(expected, actual, expected_length);
 }
 
-#define ASSERT_SEARCH_OUTPUT(text, pattern, expected)                          \
-	assert_search_output(text, sizeof(text) - 1, pattern,                  \
-			     sizeof(pattern) - 1, expected,                    \
-			     sizeof(expected) - 1)
+#define ASSERT_SEARCH_OUTPUT(file_contents, pattern, expected_lines)           \
+	assert_search_output(file_contents, sizeof(file_contents) - 1,         \
+			     pattern, sizeof(pattern) - 1, expected_lines,     \
+			     sizeof(expected_lines) - 1)
 
 /*--------------------------------*/
 /* Test cases for seek_find() */
