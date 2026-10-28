@@ -51,15 +51,15 @@ void tearDown(void)
  */
 static void record_path(const char *path, struct stat *info, void *userdata)
 {
-    (void)userdata;
+	(void)userdata;
 
-    TEST_ASSERT_NOT_NULL(path);
-    TEST_ASSERT_NOT_NULL(info);
+	TEST_ASSERT_NOT_NULL(path);
+	TEST_ASSERT_NOT_NULL(info);
 
-    TEST_ASSERT_LESS_THAN(16, path_count);
+	TEST_ASSERT_LESS_THAN(16, path_count);
 
-    strcpy(paths[path_count], path);
-    path_count++;
+	strcpy(paths[path_count], path);
+	path_count++;
 }
 
 /*
