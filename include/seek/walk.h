@@ -9,7 +9,8 @@
 #include <string.h>
 #include <sys/stat.h>
 
-typedef void (*walk_callback)(const char *path, struct stat *info);
+typedef void (*walk_callback)(const char *path, struct stat *info,
+			      void *userdata);
 
 /**
  * Walks through all entries in a directory and invokes the callback
@@ -21,6 +22,7 @@ typedef void (*walk_callback)(const char *path, struct stat *info);
  * @param func      callback invoked for each directory entry.
  * @param recursive whether to recursively walk subdirectories.
  */
-void walk_dir(const char *dir_name, walk_callback func, bool recursive);
+void walk_dir(const char *dir_name, walk_callback callback, void *userdata,
+	      bool recursive);
 
 #endif // WALK_H
