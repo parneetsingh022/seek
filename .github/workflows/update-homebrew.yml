@@ -1,0 +1,95 @@
+
+name: Update Homebrew
+
+on:
+  release:
+    types: [published]
+
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Release tag (e.g. v0.1.1)"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  update-homebrew:
+    name: Update Homebrew formula
+    runs-on: ubuntu-latest
+
+    if: ${{ github.event_name == 'workflow_dispatch' || !github.event.release.prerelease }}
+
+    steps:
+      - name: Checkout Homebrew tap
+        uses: actions/checkout@v4
+        with:
+          repository: parneetsingh022/homebrew-tap
+          ref: main
+          token: ${{ secrets.HOMEBREW_TAP_TOKEN }}
+          path: homebrew-tap
+
+      - name: Update formula
+        shell: bash
+        env:
+          RELEASE_TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.event.release.tag_name }}
+        run: |
+          set -euo pipefail
+
+          URL="https://github.com/parneetsingh022/seek/archive/refs/tags/${RELEASE_TAG}.tar.gz"
+
+          curl -fL --retry 3 "$URL" -o source.tar.gz
+          SHA256=$(sha256sum source.tar.gz | cut -d ' ' -f 1)
+
+          export URL SHA256
+
+          python3 - <<'PY'
+          import os
+          import re
+          from pathlib import Path
+
+          path = Path("homebrew-tap/Formula/seek.rb")
+          formula = path.read_text()
+
+          formula, url_count = re.subn(
+              r'(?m)^  url ".*"$',
+              lambda _: f'  url "{os.environ["URL"]}"',
+              formula,
+              count=1,
+          )
+
+          formula, sha_count = re.subn(
+              r'(?m)^  sha256 ".*"$',
+              lambda _: f'  sha256 "{os.environ["SHA256"]}"',
+              formula,
+              count=1,
+          )
+
+          if url_count != 1 or sha_count != 1:
+              raise SystemExit("Failed to update formula")
+
+          path.write_text(formula)
+          PY
+
+      - name: Commit and push changes
+        working-directory: homebrew-tap
+        shell: bash
+        env:
+          RELEASE_TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.event.release.tag_name }}
+        run: |
+          set -euo pipefail
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add Formula/seek.rb
+
+          if git diff --cached --quiet; then
+            echo "Formula is already up to date"
+            exit 0
+          fi
+
+          git commit -m "chore: update seek to ${RELEASE_TAG}"
+          git push origin main
