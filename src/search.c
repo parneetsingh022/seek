@@ -1,6 +1,8 @@
 #include <seek/highlight.h>
 #include <seek/search.h>
 
+#include <stdlib.h>
+
 const char *seek_find(const char *text, size_t text_length, const char *pattern,
 		      size_t pattern_length)
 {
@@ -44,28 +46,41 @@ const char *seek_find(const char *text, size_t text_length, const char *pattern,
 	return NULL;
 }
 
-void seek_search(FILE *output, const char *text, size_t text_length,
-		 const char *pattern, size_t pattern_length)
+void seek_search(FILE *output, const char *path, const char *pattern,
+		 size_t pattern_length)
 {
-	size_t line_number = 1;
-	size_t line_start = 0;
+	FILE *file = fopen(path, "rb");
+	if (file == NULL)
+		return;
 
-	while (line_start < text_length) {
-		size_t line_end = line_start;
-		while (line_end < text_length && text[line_end] != '\n')
-			line_end++;
+	char *line = NULL;
+	size_t capacity = 0;
+	ssize_t length;
+	size_t line_number = 0;
+	int printed_path = 0;
 
-		size_t line_length = line_end - line_start;
-		const char *line = text + line_start;
-		if (seek_find(line, line_length, pattern, pattern_length) !=
-		    NULL) {
-			fprintf(output, "%zu:", line_number);
-			print_highlighted(output, line, line_length, pattern,
-					  pattern_length);
-			fputc('\n', output);
+	while ((length = getline(&line, &capacity, file)) != -1) {
+		line_number++;
+
+		size_t line_length = (size_t)length;
+		if (line_length > 0 && line[line_length - 1] == '\n')
+			line_length--;
+
+		if (seek_find(line, line_length, pattern, pattern_length) ==
+		    NULL)
+			continue;
+
+		if (!printed_path) {
+			fprintf(output, "%s:\n", path);
+			printed_path = 1;
 		}
 
-		line_start = line_end + (line_end < text_length ? 1 : 0);
-		line_number++;
+		fprintf(output, "%zu:", line_number);
+		print_highlighted(output, line, line_length, pattern,
+				  pattern_length);
+		fputc('\n', output);
 	}
+
+	free(line);
+	fclose(file);
 }
