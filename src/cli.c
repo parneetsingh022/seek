@@ -1,6 +1,7 @@
 #include <seek/cli.h>
 
-void cli_parse(struct cli_options *options, int argc, char *argv[]) {
+void cli_parse(struct cli_options *options, int argc, char *argv[])
+{
 	if (argc != 2) {
 		goto usage_error;
 	}
