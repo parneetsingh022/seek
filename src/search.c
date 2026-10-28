@@ -46,12 +46,30 @@ const char *seek_find(const char *text, size_t text_length, const char *pattern,
 	return NULL;
 }
 
+static bool is_binary_file(FILE *file)
+{
+	unsigned char buffer[8192];
+
+	size_t n = fread(buffer, 1, sizeof(buffer), file);
+	bool binary = memchr(buffer, '\0', n) != NULL;
+
+	rewind(file);
+
+	return binary;
+}
+
 void seek_search(FILE *output, const char *path, const char *pattern,
-		 size_t pattern_length)
+		 size_t pattern_length, const struct search_options *options)
 {
 	FILE *file = fopen(path, "rb");
 	if (file == NULL)
 		return;
+
+	// Skip binary files unless explicitly enabled.
+	if (!options->search_binary && is_binary_file(file)) {
+		fclose(file);
+		return;
+	}
 
 	char *line = NULL;
 	size_t capacity = 0;

@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-10-28
+
+### Fixed
+Prevented garbled output and terminal beeps by skipping binary files by default, see #29 (@parneetsingh022)
+
 ### Added
 
 ## [0.1.0] - 2026-10-28
