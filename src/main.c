@@ -7,10 +7,14 @@
 
 void print_matching_lines(const char *path, struct stat *info, void *userdata)
 {
-	const char *target = userdata;
+    const char *target = userdata;
 
-	if (S_ISREG(info->st_mode))
-		seek_search(stdout, path, target, strlen(target));
+    const struct search_options options = {
+        .search_binary = false,
+    };
+
+    if (S_ISREG(info->st_mode))
+        seek_search(stdout, path, target, strlen(target), &options);
 }
 
 int main(int argc, char *argv[])
