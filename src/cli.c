@@ -1,26 +1,16 @@
 #include <seek/cli.h>
 
+void cli_parse(struct cli_options *options, int argc, char *argv[]) {
+	if (argc != 2) {
+		goto usage_error;
+	}
 
-void cli_init(struct cli_args *args, const char *target, const char *path)
-{
-    args->target = target;
-	snprintf(args->path, sizeof(args->path), "%s", path);
-	args->flags = 0;
-}
+	options->target = argv[1];
+	strcpy(options->path, ".");
 
-void cli_add_flags(struct cli_args *args, int flags)
-{
-	args->flags |= flags;
-}
+	return;
 
-
-void cli_remove_flags(struct cli_args *args, int flags)
-{
-	args->flags &= ~(flags);
-}
-
-
-bool cli_has_flags(const struct cli_args *args, int flags)
-{
-	return (args->flags & flags) == flags;
+usage_error:
+	fprintf(stderr, "usage: %s target\n", argv[0]);
+	exit(EXIT_FAILURE);
 }
