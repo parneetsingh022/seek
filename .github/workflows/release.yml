@@ -1,0 +1,50 @@
+name: Release
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build (${{ matrix.target }})
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            target: linux-x86_64
+
+          - os: macos-15-intel
+            target: macos-x86_64
+
+          - os: macos-latest
+            target: macos-arm64
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build
+        run: make
+
+      - name: Package binary
+        shell: bash
+        run: |
+          mkdir -p dist
+          tar -czf "dist/seek-${{ matrix.target }}.tar.gz" \
+            -C build seek
+
+      - name: Upload release assets
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.event.release.tag_name }}
+        run: |
+          gh release upload "$TAG" \
+            "dist/seek-${{ matrix.target }}.tar.gz" \
+            --clobber
