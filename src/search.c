@@ -48,14 +48,14 @@ const char *seek_find(const char *text, size_t text_length, const char *pattern,
 
 static bool is_binary_file(FILE *file)
 {
-    unsigned char buffer[8192];
+	unsigned char buffer[8192];
 
-    size_t n = fread(buffer, 1, sizeof(buffer), file);
-    bool binary = memchr(buffer, '\0', n) != NULL;
+	size_t n = fread(buffer, 1, sizeof(buffer), file);
+	bool binary = memchr(buffer, '\0', n) != NULL;
 
-    rewind(file);
+	rewind(file);
 
-    return binary;
+	return binary;
 }
 
 void seek_search(FILE *output, const char *path, const char *pattern,
@@ -66,10 +66,10 @@ void seek_search(FILE *output, const char *path, const char *pattern,
 		return;
 
 	// Skip binary files unless explicitly enabled.
-    if (!options->search_binary && is_binary_file(file)) {
-        fclose(file);
-        return;
-    }
+	if (!options->search_binary && is_binary_file(file)) {
+		fclose(file);
+		return;
+	}
 
 	char *line = NULL;
 	size_t capacity = 0;

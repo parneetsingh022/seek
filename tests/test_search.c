@@ -14,11 +14,11 @@ void setUp(void) {}
 void tearDown(void) {}
 
 static void assert_search_output(const char *file_contents,
-                                 size_t file_contents_length,
-                                 const char *pattern, size_t pattern_length,
-                                 const char *expected_lines,
-                                 size_t expected_lines_length,
-                                 const struct search_options *options)
+				 size_t file_contents_length,
+				 const char *pattern, size_t pattern_length,
+				 const char *expected_lines,
+				 size_t expected_lines_length,
+				 const struct search_options *options)
 {
 	char path[] = "/tmp/seek_test_search_XXXXXX";
 	int file_descriptor = mkstemp(path);
@@ -58,17 +58,16 @@ static void assert_search_output(const char *file_contents,
 		TEST_ASSERT_EQUAL_MEMORY(expected, actual, expected_length);
 }
 
-#define ASSERT_SEARCH_OUTPUT(file_contents, pattern, expected_lines)       \
-    do {                                                                  \
-        const struct search_options options = {                           \
-            .search_binary = false,                                       \
-        };                                                                \
-        assert_search_output(                                             \
-            file_contents, sizeof(file_contents) - 1,                     \
-            pattern, sizeof(pattern) - 1,                                  \
-            expected_lines, sizeof(expected_lines) - 1,                   \
-            &options);                                                    \
-    } while (0)
+#define ASSERT_SEARCH_OUTPUT(file_contents, pattern, expected_lines)           \
+	do {                                                                   \
+		const struct search_options options = {                        \
+		    .search_binary = false,                                    \
+		};                                                             \
+		assert_search_output(file_contents, sizeof(file_contents) - 1, \
+				     pattern, sizeof(pattern) - 1,             \
+				     expected_lines,                           \
+				     sizeof(expected_lines) - 1, &options);    \
+	} while (0)
 
 /*--------------------------------*/
 /* Test cases for seek_find() */
@@ -259,14 +258,14 @@ void test_search_prints_nothing_when_no_line_matches(void)
  */
 void test_search_skips_binary_file(void)
 {
-    const char contents[] = "hello\0world\n";
+	const char contents[] = "hello\0world\n";
 
-    const struct search_options options = {
-        .search_binary = false,
-    };
+	const struct search_options options = {
+	    .search_binary = false,
+	};
 
-    assert_search_output(contents, sizeof(contents) - 1,
-                         "hello", 5, "", 0, &options);
+	assert_search_output(contents, sizeof(contents) - 1, "hello", 5, "", 0,
+			     &options);
 }
 
 /*
@@ -274,17 +273,16 @@ void test_search_skips_binary_file(void)
  */
 void test_search_allows_binary_file(void)
 {
-    const char contents[] = "hello\0world\n";
+	const char contents[] = "hello\0world\n";
 
-    const struct search_options options = {
-        .search_binary = true,
-    };
+	const struct search_options options = {
+	    .search_binary = true,
+	};
 
-    const char expected[] = "1:\x1b[32mhello\x1b[0m\0world\n";
+	const char expected[] = "1:\x1b[32mhello\x1b[0m\0world\n";
 
-    assert_search_output(contents, sizeof(contents) - 1,
-                         "hello", 5, expected, sizeof(expected) - 1,
-                         &options);
+	assert_search_output(contents, sizeof(contents) - 1, "hello", 5,
+			     expected, sizeof(expected) - 1, &options);
 }
 
 /*
@@ -292,16 +290,15 @@ void test_search_allows_binary_file(void)
  */
 void test_search_allows_text_file(void)
 {
-    const struct search_options options = {
-        .search_binary = false,
-    };
+	const struct search_options options = {
+	    .search_binary = false,
+	};
 
-    const char contents[] = "hello world\n";
-    const char expected[] = "1:\x1b[32mhello\x1b[0m world\n";
+	const char contents[] = "hello world\n";
+	const char expected[] = "1:\x1b[32mhello\x1b[0m world\n";
 
-    assert_search_output(contents, sizeof(contents) - 1,
-                         "hello", 5, expected, sizeof(expected) - 1,
-                         &options);
+	assert_search_output(contents, sizeof(contents) - 1, "hello", 5,
+			     expected, sizeof(expected) - 1, &options);
 }
 
 /*
@@ -309,14 +306,14 @@ void test_search_allows_text_file(void)
  */
 void test_search_binary_file_without_match(void)
 {
-    const char contents[] = "hello\0world\n";
+	const char contents[] = "hello\0world\n";
 
-    const struct search_options options = {
-        .search_binary = true,
-    };
+	const struct search_options options = {
+	    .search_binary = true,
+	};
 
-    assert_search_output(contents, sizeof(contents) - 1,
-                         "missing", 7, "", 0, &options);
+	assert_search_output(contents, sizeof(contents) - 1, "missing", 7, "",
+			     0, &options);
 }
 
 int main(void)
