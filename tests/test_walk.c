@@ -49,15 +49,17 @@ void tearDown(void)
 /*
  * Callback used by the tests.
  */
-static void record_path(const char *path, struct stat *info)
+static void record_path(const char *path, struct stat *info, void *userdata)
 {
-	TEST_ASSERT_NOT_NULL(path);
-	TEST_ASSERT_NOT_NULL(info);
+    (void)userdata;
 
-	TEST_ASSERT_LESS_THAN(16, path_count);
+    TEST_ASSERT_NOT_NULL(path);
+    TEST_ASSERT_NOT_NULL(info);
 
-	strcpy(paths[path_count], path);
-	path_count++;
+    TEST_ASSERT_LESS_THAN(16, path_count);
+
+    strcpy(paths[path_count], path);
+    path_count++;
 }
 
 /*
@@ -83,7 +85,7 @@ void test_walk_dir_finds_file(void)
 
 	create_file(file_path);
 
-	walk_dir(temp_dir, record_path, false);
+	walk_dir(temp_dir, record_path, NULL, false);
 
 	TEST_ASSERT_EQUAL(1, path_count);
 	TEST_ASSERT_EQUAL_STRING(file_path, paths[0]);
@@ -102,7 +104,7 @@ void test_walk_dir_finds_directory(void)
 
 	TEST_ASSERT_EQUAL(0, result);
 
-	walk_dir(temp_dir, record_path, false);
+	walk_dir(temp_dir, record_path, NULL, false);
 
 	TEST_ASSERT_EQUAL(1, path_count);
 	TEST_ASSERT_EQUAL_STRING(dir_path, paths[0]);
@@ -125,7 +127,7 @@ void test_walk_dir_finds_multiple_entries(void)
 	int result = mkdir(dir_path, 0700);
 	TEST_ASSERT_EQUAL(0, result);
 
-	walk_dir(temp_dir, record_path, false);
+	walk_dir(temp_dir, record_path, NULL, false);
 
 	TEST_ASSERT_EQUAL(2, path_count);
 
@@ -153,7 +155,7 @@ void test_walk_dir_finds_multiple_entries(void)
  */
 void test_walk_dir_skips_special_entries(void)
 {
-	walk_dir(temp_dir, record_path, false);
+	walk_dir(temp_dir, record_path, NULL, false);
 
 	TEST_ASSERT_EQUAL(0, path_count);
 }
@@ -176,7 +178,7 @@ void test_walk_dir_non_recursive(void)
 
 	create_file(nested_file);
 
-	walk_dir(temp_dir, record_path, false);
+	walk_dir(temp_dir, record_path, NULL, false);
 
 	/*
 	 * Only the immediate subdirectory should be visited.
@@ -219,7 +221,7 @@ void test_walk_dir_recursive(void)
 	create_file(file2);
 	create_file(file3);
 
-	walk_dir(temp_dir, record_path, true);
+	walk_dir(temp_dir, record_path, NULL, true);
 
 	/*
 	 * We should see every directory and file at all three levels.

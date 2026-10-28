@@ -9,7 +9,8 @@
  */
 static bool is_special_dir(const struct dirent *entry);
 
-void walk_dir(const char *dir_name, walk_callback func, bool recursive)
+void walk_dir(const char *dir_name, walk_callback callback, void *userdata,
+	      bool recursive)
 {
 	DIR *dir;
 	struct dirent *entry;
@@ -33,10 +34,10 @@ void walk_dir(const char *dir_name, walk_callback func, bool recursive)
 		if ((stat(path, &info)) != 0)
 			continue;
 
-		func(path, &info);
+		callback(path, &info, userdata);
 		// Recursively walk into subdirectories when enabled.
 		if (recursive && S_ISDIR(info.st_mode))
-			walk_dir(path, func, recursive);
+			walk_dir(path, callback, userdata, recursive);
 	}
 
 	closedir(dir);
