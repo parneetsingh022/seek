@@ -1,9 +1,62 @@
 #include "unity.h"
 #include <seek/search.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
 
 void setUp(void) {}
 
 void tearDown(void) {}
+
+static void assert_search_output(const char *file_contents,
+				 size_t file_contents_length,
+				 const char *pattern, size_t pattern_length,
+				 const char *expected_lines,
+				 size_t expected_lines_length)
+{
+	char path[] = "/tmp/seek_test_search_XXXXXX";
+	int file_descriptor = mkstemp(path);
+	TEST_ASSERT_TRUE(file_descriptor >= 0);
+
+	FILE *input = fdopen(file_descriptor, "wb");
+	TEST_ASSERT_NOT_NULL(input);
+	size_t written = fwrite(file_contents, 1, file_contents_length, input);
+	int input_close_result = fclose(input);
+	TEST_ASSERT_EQUAL_UINT(file_contents_length, written);
+	TEST_ASSERT_EQUAL_INT(0, input_close_result);
+
+	char actual[512];
+	FILE *output = tmpfile();
+
+	TEST_ASSERT_NOT_NULL(output);
+	seek_search(output, path, pattern, pattern_length);
+	rewind(output);
+	size_t actual_length = fread(actual, 1, sizeof(actual), output);
+	fclose(output);
+	unlink(path);
+
+	char expected[512];
+	size_t expected_length = 0;
+	if (expected_lines_length > 0) {
+		int prefix_length =
+		    snprintf(expected, sizeof(expected), "%s:\n", path);
+		TEST_ASSERT_TRUE(prefix_length >= 0);
+		expected_length = (size_t)prefix_length + expected_lines_length;
+		TEST_ASSERT_TRUE(expected_length <= sizeof(expected));
+		memcpy(expected + prefix_length, expected_lines,
+		       expected_lines_length);
+	}
+
+	TEST_ASSERT_EQUAL_UINT(expected_length, actual_length);
+	if (expected_length > 0)
+		TEST_ASSERT_EQUAL_MEMORY(expected, actual, expected_length);
+}
+
+#define ASSERT_SEARCH_OUTPUT(file_contents, pattern, expected_lines)           \
+	assert_search_output(file_contents, sizeof(file_contents) - 1,         \
+			     pattern, sizeof(pattern) - 1, expected_lines,     \
+			     sizeof(expected_lines) - 1)
 
 /*--------------------------------*/
 /* Test cases for seek_find() */
@@ -159,6 +212,36 @@ void test_finds_non_ascii_byte(void)
 	TEST_ASSERT_EQUAL_PTR(text + 1, result);
 }
 
+/* Matching lines are numbered by their original position and highlighted. */
+void test_search_prints_numbered_matching_lines(void)
+{
+	ASSERT_SEARCH_OUTPUT(
+	    "one cat\ncat two\nnone\nlast cat", "cat",
+	    "1:one \x1b[32mcat\x1b[0m\n2:\x1b[32mcat\x1b[0m two\n"
+	    "4:last \x1b[32mcat\x1b[0m\n");
+}
+
+/* A matching line is emitted only once even when it contains many matches. */
+void test_search_prints_matching_line_once(void)
+{
+	ASSERT_SEARCH_OUTPUT("cat and cat\n", "cat",
+			     "1:\x1b[32mcat\x1b[0m and "
+			     "\x1b[32mcat\x1b[0m\n");
+}
+
+/* A matching final line gets a newline even if the input has none. */
+void test_search_handles_final_line_without_newline(void)
+{
+	ASSERT_SEARCH_OUTPUT("first\nfind me", "find",
+			     "2:\x1b[32mfind\x1b[0m me\n");
+}
+
+/* No output is produced when none of the lines contain the pattern. */
+void test_search_prints_nothing_when_no_line_matches(void)
+{
+	ASSERT_SEARCH_OUTPUT("first\nsecond\n", "missing", "");
+}
+
 int main(void)
 {
 	UNITY_BEGIN();
@@ -175,6 +258,10 @@ int main(void)
 	RUN_TEST(test_search_is_case_sensitive);
 	RUN_TEST(test_finds_pattern_containing_null_byte);
 	RUN_TEST(test_finds_non_ascii_byte);
+	RUN_TEST(test_search_prints_numbered_matching_lines);
+	RUN_TEST(test_search_prints_matching_line_once);
+	RUN_TEST(test_search_handles_final_line_without_newline);
+	RUN_TEST(test_search_prints_nothing_when_no_line_matches);
 
 	return UNITY_END();
 }
